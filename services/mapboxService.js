@@ -1,4 +1,4 @@
-const MAPBOX_ACCESS_TOKEN = 'YOUR_MAPBOX_ACCESS_TOKEN'; // Replace with your actual token
+const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiYmhhcmdhdmExNDU4IiwiYSI6ImNtZHlzN2w2cDA1N2EyanExc3Y3YXJreGwifQ.W8OJlNN_roEBFRj05Wmm5A'; // Replace with your actual token
 const MAPBOX_BASE_URL = 'https://api.mapbox.com/geocoding/v5/mapbox.places';
 
 export const geocodeAddress = async (address) => {

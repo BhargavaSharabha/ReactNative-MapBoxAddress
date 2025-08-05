@@ -7,12 +7,10 @@ import {
   Alert,
   Linking
 } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
 
 const ResultsDisplay = ({ coordinates, address, onReset }) => {
   const handleCopyCoordinates = () => {
     const coordText = `${coordinates.latitude}, ${coordinates.longitude}`;
-    // In a real app, you'd use Clipboard API
     Alert.alert('Coordinates Copied', coordText);
   };
 
@@ -55,25 +53,9 @@ const ResultsDisplay = ({ coordinates, address, onReset }) => {
         </View>
       </View>
 
-      <View style={styles.mapContainer}>
-        <MapView
-          style={styles.map}
-          initialRegion={{
-            latitude: coordinates.latitude,
-            longitude: coordinates.longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-          }}
-        >
-          <Marker
-            coordinate={{
-              latitude: coordinates.latitude,
-              longitude: coordinates.longitude,
-            }}
-            title={address}
-            description="Selected location"
-          />
-        </MapView>
+      <View style={styles.mapPlaceholder}>
+        <Text style={styles.mapPlaceholderText}>📍 Map View</Text>
+        <Text style={styles.mapPlaceholderSubtext}>Location: {coordinates.latitude.toFixed(4)}, {coordinates.longitude.toFixed(4)}</Text>
       </View>
 
       <View style={styles.actionsContainer}>
@@ -155,16 +137,25 @@ const styles = StyleSheet.create({
     color: '#333',
     fontFamily: 'monospace',
   },
-  mapContainer: {
-    height: 300,
+  mapPlaceholder: {
+    height: 200,
+    backgroundColor: '#e9ecef',
     borderRadius: 8,
-    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 15,
     borderWidth: 1,
-    borderColor: '#e9ecef',
+    borderColor: '#dee2e6',
   },
-  map: {
-    flex: 1,
+  mapPlaceholderText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#6c757d',
+    marginBottom: 5,
+  },
+  mapPlaceholderSubtext: {
+    fontSize: 14,
+    color: '#6c757d',
   },
   actionsContainer: {
     flexDirection: 'row',
