@@ -4,7 +4,7 @@ import {
   TextInput,
   Text,
   TouchableOpacity,
-  FlatList,
+  ScrollView,
   StyleSheet,
   ActivityIndicator,
   Alert
@@ -24,19 +24,25 @@ const AddressInput = ({ onAddressSelect }) => {
     }
 
     if (query.length >= 3) {
+      console.log('�� Query length >= 3, starting search for:', query);
       setLoading(true);
       searchTimeoutRef.current = setTimeout(async () => {
         try {
+          console.log('⏰ Debounced search triggered for:', query);
           const results = await searchAddresses(query);
+          console.log('📋 Search results received:', results);
           setSuggestions(results);
           setShowSuggestions(true);
+          console.log('✅ Suggestions updated, count:', results.length);
+          console.log('🔍 showSuggestions set to:', true);
         } catch (error) {
-          console.error('Search error:', error);
+          console.error('❌ Search error:', error);
         } finally {
           setLoading(false);
         }
-      }, 500); // Debounce for 500ms
+      }, 500);
     } else {
+      console.log('⚠️ Query too short or empty, clearing suggestions');
       setSuggestions([]);
       setShowSuggestions(false);
       setLoading(false);
@@ -50,6 +56,7 @@ const AddressInput = ({ onAddressSelect }) => {
   }, [query]);
 
   const handleAddressSelect = (address) => {
+    console.log('🎯 Address selected:', address.text);
     setQuery(address.text);
     setShowSuggestions(false);
     onAddressSelect(address.text);
@@ -64,14 +71,9 @@ const AddressInput = ({ onAddressSelect }) => {
     }
   };
 
-  const renderSuggestion = ({ item }) => (
-    <TouchableOpacity
-      style={styles.suggestionItem}
-      onPress={() => handleAddressSelect(item)}
-    >
-      <Text style={styles.suggestionText}>{item.text}</Text>
-    </TouchableOpacity>
-  );
+
+
+  console.log('�� Component render - showSuggestions:', showSuggestions, 'suggestions count:', suggestions.length);
 
   return (
     <View style={styles.container}>
@@ -94,15 +96,32 @@ const AddressInput = ({ onAddressSelect }) => {
         <Text style={styles.searchButtonText}>Search</Text>
       </TouchableOpacity>
 
+      {/* Debug info */}
+      <View style={styles.debugContainer}>
+        <Text style={styles.debugText}>
+          Show Suggestions: {showSuggestions ? 'YES' : 'NO'} | 
+          Count: {suggestions.length}
+        </Text>
+      </View>
+
       {showSuggestions && suggestions.length > 0 && (
         <View style={styles.suggestionsContainer}>
-          <FlatList
-            data={suggestions}
-            renderItem={renderSuggestion}
-            keyExtractor={(item) => item.id}
+          <Text style={styles.suggestionsHeader}>Suggestions ({suggestions.length}):</Text>
+          <ScrollView 
             style={styles.suggestionsList}
-            keyboardShouldPersistTaps="handled"
-          />
+            nestedScrollEnabled={true}
+            showsVerticalScrollIndicator={true}
+          >
+            {suggestions.map((item, index) => (
+              <TouchableOpacity
+                key={item.id}
+                style={styles.suggestionItem}
+                onPress={() => handleAddressSelect(item)}
+              >
+                <Text style={styles.suggestionText}>{item.text}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
       )}
     </View>
@@ -112,6 +131,7 @@ const AddressInput = ({ onAddressSelect }) => {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
+    backgroundColor: '#f8f9fa',
   },
   inputContainer: {
     flexDirection: 'row',
@@ -135,19 +155,48 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
+    marginBottom: 10,
   },
   searchButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },
+  debugContainer: {
+    backgroundColor: '#e9ecef',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+  debugText: {
+    fontSize: 12,
+    color: '#6c757d',
+    textAlign: 'center',
+  },
+  suggestionsHeader: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+    padding: 10,
+    backgroundColor: '#f8f9fa',
+    borderBottomWidth: 1,
+    borderBottomColor: '#dee2e6',
+  },
   suggestionsContainer: {
     backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
+    borderWidth: 2,
+    borderColor: '#007AFF',
     borderRadius: 8,
-    maxHeight: 200,
+    maxHeight: 250,
     marginTop: 5,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   suggestionsList: {
     flex: 1,
@@ -156,6 +205,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
+    backgroundColor: '#fff',
   },
   suggestionText: {
     fontSize: 14,
@@ -163,4 +213,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddressInput; 
+export default AddressInput;
