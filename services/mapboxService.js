@@ -1,5 +1,5 @@
-const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiYmhhcmdhdmExNDU4IiwiYSI6ImNtZHlzN2w2cDA1N2EyanExc3Y3YXJreGwifQ.W8OJlNN_roEBFRj05Wmm5A';
-const MAPBOX_BASE_URL = 'https://api.mapbox.com/geocoding/v5/mapbox.places';
+const MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN || 'pk.eyJ1IjoiYmhhcmdhdmExNDU4IiwiYSI6ImNtZHlzN2w2cDA1N2EyanExc3Y3YXJreGwifQ.W8OJlNN_roEBFRj05Wmm5A';
+const MAPBOX_BASE_URL = process.env.MAPBOX_BASE_URL || 'https://api.mapbox.com/geocoding/v5/mapbox.places';
 
 export const geocodeAddress = async (address) => {
   try {
