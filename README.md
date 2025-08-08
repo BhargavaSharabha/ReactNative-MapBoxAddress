@@ -31,20 +31,21 @@ npm install
 #### Detailed Steps to Get Your MapBox Access Token:
 
 1. **Visit MapBox Website**
+
    - Go to [MapBox](https://www.mapbox.com/)
    - Click "Sign up" or "Log in" if you already have an account
-
 2. **Create Account (if new user)**
+
    - Fill in your email, password, and name
    - Verify your email address
    - Complete the account setup
-
 3. **Navigate to Access Tokens**
+
    - Log in to your MapBox account
    - Go to your [Account Dashboard](https://account.mapbox.com/)
    - Click on "Access tokens" in the left sidebar
-
 4. **Create New Token**
+
    - Click "Create a token"
    - Give your token a name (e.g., "Address Converter App")
    - Set the token type to "Public" (for client-side usage)
@@ -53,28 +54,29 @@ npm install
      - `styles:tiles` (for map tiles)
      - `geocoding` (for address search and geocoding)
    - Click "Create token"
-
 5. **Copy Your Token**
+
    - Copy the generated token (starts with `pk.`)
    - Keep it secure and don't share it publicly
 
 ### 3. Configure Environment Variables
 
 1. **Create Environment File**
+
    - Create a new file called `.env` in the project root
    - Copy the content from the example below
-
 2. **Example .env File**
+
    ```env
    # MapBox Configuration
    # Get your access token from https://account.mapbox.com/access-tokens/
    MAPBOX_ACCESS_TOKEN=your_actual_mapbox_token_here
-   
+
    # MapBox API Base URL
    MAPBOX_BASE_URL=https://api.mapbox.com/geocoding/v5/mapbox.places
    ```
-
 3. **Replace Token**
+
    - Replace `your_actual_mapbox_token_here` with your actual MapBox access token
    - Save the file
 
@@ -164,22 +166,23 @@ You can modify the MapBox service to:
 ### Common Issues
 
 1. **"Geocoding failed" error**
+
    - Check your MapBox access token in the `.env` file
    - Verify the token is valid and has the correct permissions
    - Ensure internet connectivity
    - Verify the address is valid
-
 2. **Map not displaying**
+
    - Check if react-native-maps is properly installed
    - Verify MapBox token has map permissions (`styles:read`, `styles:tiles`)
    - Ensure the `.env` file is in the project root
-
 3. **Autocomplete not working**
+
    - Check MapBox API quota (free tier: 50,000 requests/month)
    - Verify network connectivity
    - Ensure the token has `geocoding` permissions
-
 4. **Environment variables not loading**
+
    - Make sure the `.env` file is in the project root directory
    - Verify the file is named exactly `.env` (not `.env.txt` or similar)
    - Restart the development server after creating the `.env` file
@@ -210,4 +213,4 @@ For issues and questions:
 
 ---
 
-**Note**: This app requires a valid MapBox access token to function. The free tier provides 50,000 requests per month, which is sufficient for development and small-scale usage. 
+**Note**: This app requires a valid MapBox access token to function. The free tier provides 50,000 requests per month, which is sufficient for development and small-scale usage.

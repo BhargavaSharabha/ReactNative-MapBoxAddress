@@ -35,7 +35,8 @@ export const searchAddresses = async (query) => {
     console.log('🔍 Search Addresses called with query:', query);
     
     const encodedQuery = encodeURIComponent(query);
-    const url = `${MAPBOX_BASE_URL}/${encodedQuery}.json?access_token=${MAPBOX_ACCESS_TOKEN}&country=US&types=address&limit=5`;
+    // Allow broader place types and enable autocomplete for partial queries
+    const url = `${MAPBOX_BASE_URL}/${encodedQuery}.json?access_token=${MAPBOX_ACCESS_TOKEN}&country=US&types=address,place&autocomplete=true&limit=5`;
     
     console.log('🔍 Search URL:', url);
     

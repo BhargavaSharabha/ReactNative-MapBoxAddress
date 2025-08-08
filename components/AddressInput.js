@@ -7,7 +7,9 @@ import {
   ScrollView,
   StyleSheet,
   ActivityIndicator,
-  Alert
+  Alert,
+  KeyboardAvoidingView,
+  Platform
 } from 'react-native';
 import { searchAddresses } from '../services/mapboxService';
 
@@ -76,7 +78,11 @@ const AddressInput = ({ onAddressSelect }) => {
   console.log('�� Component render - showSuggestions:', showSuggestions, 'suggestions count:', suggestions.length);
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 24}
+    >
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -91,28 +97,17 @@ const AddressInput = ({ onAddressSelect }) => {
           <ActivityIndicator style={styles.loading} size="small" color="#007AFF" />
         )}
       </View>
-      
-      <TouchableOpacity style={styles.searchButton} onPress={handleSubmit}>
-        <Text style={styles.searchButtonText}>Search</Text>
-      </TouchableOpacity>
-
-      {/* Debug info */}
-      <View style={styles.debugContainer}>
-        <Text style={styles.debugText}>
-          Show Suggestions: {showSuggestions ? 'YES' : 'NO'} | 
-          Count: {suggestions.length}
-        </Text>
-      </View>
 
       {showSuggestions && suggestions.length > 0 && (
         <View style={styles.suggestionsContainer}>
           <Text style={styles.suggestionsHeader}>Suggestions ({suggestions.length}):</Text>
-          <ScrollView 
+          <ScrollView
             style={styles.suggestionsList}
             nestedScrollEnabled={true}
             showsVerticalScrollIndicator={true}
+            keyboardShouldPersistTaps="handled"
           >
-            {suggestions.map((item, index) => (
+            {suggestions.map((item) => (
               <TouchableOpacity
                 key={item.id}
                 style={styles.suggestionItem}
@@ -124,12 +119,25 @@ const AddressInput = ({ onAddressSelect }) => {
           </ScrollView>
         </View>
       )}
-    </View>
+
+      <TouchableOpacity style={styles.searchButton} onPress={handleSubmit}>
+        <Text style={styles.searchButtonText}>Search</Text>
+      </TouchableOpacity>
+
+      {/* Debug info */}
+      <View style={styles.debugContainer}>
+        <Text style={styles.debugText}>
+          Show Suggestions: {showSuggestions ? 'YES' : 'NO'} |
+          Count: {suggestions.length}
+        </Text>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 20,
     backgroundColor: '#f8f9fa',
   },
@@ -190,6 +198,7 @@ const styles = StyleSheet.create({
     maxHeight: 250,
     marginTop: 5,
     elevation: 5,
+    zIndex: 999, // ensure suggestions appear above other elements on both iOS & Android
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -198,9 +207,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
-  suggestionsList: {
-    flex: 1,
-  },
+  suggestionsList: {},
   suggestionItem: {
     padding: 15,
     borderBottomWidth: 1,
