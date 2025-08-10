@@ -28,10 +28,20 @@ const AddressInput = ({ onAddressSelect }) => {
   const [loading, setLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchTimeoutRef = useRef(null);
+  const suppressNextSearchRef = useRef(false);
 
   useEffect(() => {
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
+    }
+
+    // If a suggestion was just selected, suppress this cycle's search
+    if (suppressNextSearchRef.current) {
+      suppressNextSearchRef.current = false;
+      setSuggestions([]);
+      setShowSuggestions(false);
+      setLoading(false);
+      return;
     }
 
     if (address1.length >= 3) {
@@ -67,10 +77,12 @@ const AddressInput = ({ onAddressSelect }) => {
 
   const handleSuggestionPress = (item) => {
     if (__DEV__) console.log('Address selected:', item);
+    suppressNextSearchRef.current = true;
     setAddress1(item.address1 || item.text || '');
     setCity(item.city || '');
     setStateValue(item.state || '');
     setZipcode(item.zipcode || '');
+    setSuggestions([]);
     setShowSuggestions(false);
     setLockLocationFields(true);
     // Move focus to Address 2 so the user can enter Apt/Suite
