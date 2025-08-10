@@ -21,6 +21,7 @@ const AddressInput = ({ onAddressSelect }) => {
   const [stateValue, setStateValue] = useState('');
   const [zipcode, setZipcode] = useState('');
   const [lockLocationFields, setLockLocationFields] = useState(false);
+  const address2Ref = useRef(null);
 
   // Suggestions state
   const [suggestions, setSuggestions] = useState([]);
@@ -72,6 +73,10 @@ const AddressInput = ({ onAddressSelect }) => {
     setZipcode(item.zipcode || '');
     setShowSuggestions(false);
     setLockLocationFields(true);
+    // Move focus to Address 2 so the user can enter Apt/Suite
+    setTimeout(() => {
+      address2Ref.current?.focus();
+    }, 0);
   };
 
   const handleSubmit = () => {
@@ -139,6 +144,7 @@ const AddressInput = ({ onAddressSelect }) => {
           value={address2}
           onChangeText={setAddress2}
           autoCapitalize="none"
+          ref={address2Ref}
         />
       </View>
 
