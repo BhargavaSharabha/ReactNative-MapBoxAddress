@@ -20,6 +20,7 @@ const AddressInput = ({ onAddressSelect }) => {
   const [city, setCity] = useState('');
   const [stateValue, setStateValue] = useState('');
   const [zipcode, setZipcode] = useState('');
+  const [lockLocationFields, setLockLocationFields] = useState(false);
 
   // Suggestions state
   const [suggestions, setSuggestions] = useState([]);
@@ -70,6 +71,7 @@ const AddressInput = ({ onAddressSelect }) => {
     setStateValue(item.state || '');
     setZipcode(item.zipcode || '');
     setShowSuggestions(false);
+    setLockLocationFields(true);
   };
 
   const handleSubmit = () => {
@@ -110,7 +112,17 @@ const AddressInput = ({ onAddressSelect }) => {
           style={styles.input}
           placeholder="Address line 1 (street address)"
           value={address1}
-          onChangeText={setAddress1}
+          onChangeText={(text) => {
+            // If user edits Address 1 after selecting a suggestion,
+            // unlock city/state/zip so they can type freely again
+            if (lockLocationFields) {
+              setLockLocationFields(false);
+              setCity('');
+              setStateValue('');
+              setZipcode('');
+            }
+            setAddress1(text);
+          }}
           onSubmitEditing={handleSubmit}
           returnKeyType="search"
           autoCapitalize="words"
@@ -132,27 +144,33 @@ const AddressInput = ({ onAddressSelect }) => {
 
       <View style={styles.inlineRow}>
         <TextInput
-          style={[styles.input, styles.flexInput]}
+          style={[styles.input, styles.flexInput, lockLocationFields && styles.disabledInput]}
           placeholder="City"
           value={city}
           onChangeText={setCity}
           autoCapitalize="words"
+          editable={!lockLocationFields}
+          selectTextOnFocus={!lockLocationFields}
         />
         <TextInput
-          style={[styles.input, styles.stateInput]}
+          style={[styles.input, styles.stateInput, lockLocationFields && styles.disabledInput]}
           placeholder="State"
           value={stateValue}
           onChangeText={setStateValue}
           autoCapitalize="words"
           maxLength={20}
+          editable={!lockLocationFields}
+          selectTextOnFocus={!lockLocationFields}
         />
         <TextInput
-          style={[styles.input, styles.zipInput]}
+          style={[styles.input, styles.zipInput, lockLocationFields && styles.disabledInput]}
           placeholder="Zipcode"
           value={zipcode}
           onChangeText={setZipcode}
           keyboardType="number-pad"
           maxLength={10}
+          editable={!lockLocationFields}
+          selectTextOnFocus={!lockLocationFields}
         />
       </View>
 
@@ -268,6 +286,10 @@ const styles = StyleSheet.create({
   zipInput: {
     width: 110,
     marginLeft: 10,
+  },
+  disabledInput: {
+    backgroundColor: '#f1f3f5',
+    color: '#6c757d',
   },
   suggestionsContainer: {
     backgroundColor: '#fff',
