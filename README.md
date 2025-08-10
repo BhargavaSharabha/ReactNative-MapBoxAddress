@@ -68,19 +68,16 @@ npm install
 2. **Example .env File**
 
    ```env
-   # MapBox Configuration
-   # Get your access token from https://account.mapbox.com/access-tokens/
-   MAPBOX_ACCESS_TOKEN=your_actual_mapbox_token_here
-
-   # MapBox API Base URL
-   MAPBOX_BASE_URL=https://api.mapbox.com/geocoding/v5/mapbox.places
+   # Mapbox Configuration (Expo public envs)
+   EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN=your_actual_mapbox_token_here
+   EXPO_PUBLIC_MAPBOX_BASE_URL=https://api.mapbox.com/geocoding/v5/mapbox.places
    ```
 3. **Replace Token**
 
    - Replace `your_actual_mapbox_token_here` with your actual MapBox access token
    - Save the file
 
-**Note**: The `.env` file is already included in `.gitignore` to keep your token secure.
+**Note**: Expo only exposes variables prefixed with `EXPO_PUBLIC_` to the app.
 
 ### 4. Run the App
 

@@ -7,6 +7,7 @@ import {
   Alert,
   Linking
 } from 'react-native';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 
 const ResultsDisplay = ({ coordinates, address, onReset }) => {
   const handleCopyCoordinates = () => {
@@ -53,10 +54,26 @@ const ResultsDisplay = ({ coordinates, address, onReset }) => {
         </View>
       </View>
 
-      <View style={styles.mapPlaceholder}>
-        <Text style={styles.mapPlaceholderText}>📍 Map View</Text>
-        <Text style={styles.mapPlaceholderSubtext}>Location: {coordinates.latitude.toFixed(4)}, {coordinates.longitude.toFixed(4)}</Text>
-      </View>
+      <MapView
+        style={styles.map}
+        provider={PROVIDER_GOOGLE}
+        initialRegion={{
+          latitude: coordinates.latitude,
+          longitude: coordinates.longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        }}
+        pointerEvents="auto"
+      >
+        <Marker
+          coordinate={{
+            latitude: coordinates.latitude,
+            longitude: coordinates.longitude,
+          }}
+          title="Selected Location"
+          description={address}
+        />
+      </MapView>
 
       <View style={styles.actionsContainer}>
         <TouchableOpacity style={styles.actionButton} onPress={handleCopyCoordinates}>
@@ -137,25 +154,12 @@ const styles = StyleSheet.create({
     color: '#333',
     fontFamily: 'monospace',
   },
-  mapPlaceholder: {
-    height: 200,
-    backgroundColor: '#e9ecef',
+  map: {
+    height: 220,
     borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
     marginBottom: 15,
     borderWidth: 1,
     borderColor: '#dee2e6',
-  },
-  mapPlaceholderText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#6c757d',
-    marginBottom: 5,
-  },
-  mapPlaceholderSubtext: {
-    fontSize: 14,
-    color: '#6c757d',
   },
   actionsContainer: {
     flexDirection: 'row',

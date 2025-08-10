@@ -14,7 +14,14 @@ import {
 import { searchAddresses } from '../services/mapboxService';
 
 const AddressInput = ({ onAddressSelect }) => {
-  const [query, setQuery] = useState('');
+  // Structured address fields
+  const [address1, setAddress1] = useState('');
+  const [address2, setAddress2] = useState('');
+  const [city, setCity] = useState('');
+  const [stateValue, setStateValue] = useState('');
+  const [zipcode, setZipcode] = useState('');
+
+  // Suggestions state
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -25,26 +32,25 @@ const AddressInput = ({ onAddressSelect }) => {
       clearTimeout(searchTimeoutRef.current);
     }
 
-    if (query.length >= 3) {
-      console.log('�� Query length >= 3, starting search for:', query);
+    if (address1.length >= 3) {
+      if (__DEV__) console.log('Search: address1 length >= 3, querying for:', address1);
       setLoading(true);
       searchTimeoutRef.current = setTimeout(async () => {
         try {
-          console.log('⏰ Debounced search triggered for:', query);
-          const results = await searchAddresses(query);
-          console.log('📋 Search results received:', results);
+          if (__DEV__) console.log('Debounced search triggered for:', address1);
+          const results = await searchAddresses(address1);
+          if (__DEV__) console.log('Search results received:', results);
           setSuggestions(results);
           setShowSuggestions(true);
-          console.log('✅ Suggestions updated, count:', results.length);
-          console.log('🔍 showSuggestions set to:', true);
+          if (__DEV__) console.log('Suggestions updated, count:', results.length);
         } catch (error) {
-          console.error('❌ Search error:', error);
+          console.error('Search error:', error);
         } finally {
           setLoading(false);
         }
       }, 500);
     } else {
-      console.log('⚠️ Query too short or empty, clearing suggestions');
+      if (__DEV__) console.log('Query too short or empty, clearing suggestions');
       setSuggestions([]);
       setShowSuggestions(false);
       setLoading(false);
@@ -55,27 +61,43 @@ const AddressInput = ({ onAddressSelect }) => {
         clearTimeout(searchTimeoutRef.current);
       }
     };
-  }, [query]);
+  }, [address1]);
 
-  const handleAddressSelect = (address) => {
-    console.log('🎯 Address selected:', address.text);
-    setQuery(address.text);
+  const handleSuggestionPress = (item) => {
+    if (__DEV__) console.log('Address selected:', item);
+    setAddress1(item.address1 || item.text || '');
+    setCity(item.city || '');
+    setStateValue(item.state || '');
+    setZipcode(item.zipcode || '');
     setShowSuggestions(false);
-    onAddressSelect(address.text);
   };
 
   const handleSubmit = () => {
-    if (query.trim()) {
-      onAddressSelect(query.trim());
+    const a1 = address1.trim();
+    const a2 = address2.trim();
+    const c = city.trim();
+    const s = stateValue.trim();
+    const z = zipcode.trim();
+
+    if (a1 && c && s && z) {
+      const fullAddress = [
+        [a1, a2].filter(Boolean).join(', '),
+        [c, s, z].filter(Boolean).join(', '),
+      ]
+        .filter(Boolean)
+        .join(', ');
+
+      onAddressSelect(fullAddress);
       setShowSuggestions(false);
     } else {
-      Alert.alert('Error', 'Please enter a valid address');
+      Alert.alert('Error', 'Please complete Address 1, City, State, and Zipcode');
     }
   };
 
-
-
-  console.log('�� Component render - showSuggestions:', showSuggestions, 'suggestions count:', suggestions.length);
+  if (__DEV__) {
+    // lightweight debug
+    // console.log('Render - showSuggestions:', showSuggestions, 'suggestions:', suggestions.length);
+  }
 
   return (
     <KeyboardAvoidingView
@@ -86,9 +108,9 @@ const AddressInput = ({ onAddressSelect }) => {
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Enter a USA address..."
-          value={query}
-          onChangeText={setQuery}
+          placeholder="Address line 1 (street address)"
+          value={address1}
+          onChangeText={setAddress1}
           onSubmitEditing={handleSubmit}
           returnKeyType="search"
           autoCapitalize="words"
@@ -96,6 +118,42 @@ const AddressInput = ({ onAddressSelect }) => {
         {loading && (
           <ActivityIndicator style={styles.loading} size="small" color="#007AFF" />
         )}
+      </View>
+
+      <View style={styles.inlineRow}>
+        <TextInput
+          style={[styles.input, styles.halfInput, styles.leftInput]}
+          placeholder="Apt/Suite (Address line 2)"
+          value={address2}
+          onChangeText={setAddress2}
+          autoCapitalize="none"
+        />
+      </View>
+
+      <View style={styles.inlineRow}>
+        <TextInput
+          style={[styles.input, styles.flexInput]}
+          placeholder="City"
+          value={city}
+          onChangeText={setCity}
+          autoCapitalize="words"
+        />
+        <TextInput
+          style={[styles.input, styles.stateInput]}
+          placeholder="State"
+          value={stateValue}
+          onChangeText={setStateValue}
+          autoCapitalize="words"
+          maxLength={20}
+        />
+        <TextInput
+          style={[styles.input, styles.zipInput]}
+          placeholder="Zipcode"
+          value={zipcode}
+          onChangeText={setZipcode}
+          keyboardType="number-pad"
+          maxLength={10}
+        />
       </View>
 
       {showSuggestions && suggestions.length > 0 && (
@@ -111,7 +169,7 @@ const AddressInput = ({ onAddressSelect }) => {
               <TouchableOpacity
                 key={item.id}
                 style={styles.suggestionItem}
-                onPress={() => handleAddressSelect(item)}
+                onPress={() => handleSuggestionPress(item)}
               >
                 <Text style={styles.suggestionText}>{item.text}</Text>
               </TouchableOpacity>
@@ -127,8 +185,7 @@ const AddressInput = ({ onAddressSelect }) => {
       {/* Debug info */}
       <View style={styles.debugContainer}>
         <Text style={styles.debugText}>
-          Show Suggestions: {showSuggestions ? 'YES' : 'NO'} |
-          Count: {suggestions.length}
+          Show Suggestions: {showSuggestions ? 'YES' : 'NO'} | Count: {suggestions.length}
         </Text>
       </View>
     </KeyboardAvoidingView>
@@ -189,6 +246,28 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f9fa',
     borderBottomWidth: 1,
     borderBottomColor: '#dee2e6',
+  },
+  inlineRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 10,
+  },
+  halfInput: {
+    flex: 1,
+  },
+  leftInput: {
+    marginRight: 0,
+  },
+  flexInput: {
+    flex: 1,
+  },
+  stateInput: {
+    width: 90,
+    marginLeft: 10,
+  },
+  zipInput: {
+    width: 110,
+    marginLeft: 10,
   },
   suggestionsContainer: {
     backgroundColor: '#fff',
